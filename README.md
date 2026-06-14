@@ -12,14 +12,17 @@ create a new query and run these codes:
 USE dborsys;
 
 -- Create a dummy admin
+
 INSERT INTO tblemployees (emp_name) VALUES ('Admin User');
 INSERT INTO tbluserstaff (usr_staff_id, staff_email, staff_password) VALUES (1, 'admin@system.com', 'admin123');
 
--- Create a dummy customer record
+-- Creates a dummy customer record
+
 INSERT INTO tblcustomer (cust_name) VALUES ('Test Customer');
 
--- Create a dummy user account for that customer (This creates the usr_id)
--- Assume the cust_id created above was 1
+-- Creates a dummy user account 
+
+
 INSERT INTO tblusercust (usr_cust_id, usr_email, usr_password) 
 VALUES (1, 'customer@test.com', 'pass123');
 
