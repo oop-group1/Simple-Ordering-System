@@ -26,6 +26,17 @@ INSERT INTO tblcustomer (cust_name) VALUES ('Test Customer');
 INSERT INTO tblusercust (usr_cust_id, usr_email, usr_password) 
 VALUES (1, 'customer@test.com', 'pass123');
 
+-- More customers so the order screen's customer dropdown (1-5) all work
+
+INSERT INTO tblcustomer (cust_name) VALUES
+('Juan Dela Cruz'), ('Maria Santos'), ('Pedro Reyes'), ('Ana Lim');
+
+INSERT INTO tblusercust (usr_cust_id, usr_email, usr_password) VALUES
+(2, 'juan@test.com', 'pass123'),
+(3, 'maria@test.com', 'pass123'),
+(4, 'pedro@test.com', 'pass123'),
+(5, 'ana@test.com', 'pass123');
+
 everything should be working now.
 
 The design used is the MVC design pattern. Summary of the files:
@@ -51,9 +62,27 @@ The design used is the MVC design pattern. Summary of the files:
 		-OrderService.java: Manages the checkout process. It calculates totals and checks if there is enough stock before allowing the OrderDAO to save the order.
 
 4. The UI Layer (User Interface)
+	The actual frontend is a Java Swing GUI built on top of the existing services (no backend logic was changed).
+		-OrderingSystemApp.java: the main entry point. Run this to start the GUI.
+		-LoginFrame.java: the login window (staff sign in).
+		-MainFrame.java: the window after login; holds the Inventory, New Order and Reports tabs.
+		-InventoryPanel.java: add, view, search (live), update stock, and delete products.
+		-OrderPanel.java: pick products, build a cart, and place an order.
+		-ReportPanel.java: inventory summary stats and a full product list.
+		-Theme.java: all the colors, fonts and shared button/field styling.
+		-ReadOnlyTableModel.java: a small table model that makes the tables display-only.
+		-OrderingSystemGUI.java: the old console version, kept only as a backup for testing.
 
-    OrderingSystemGUI.java: dummy frontend created for the sole purpose of testing if the backend is working correctly.
 
+
+How to run the GUI:
+	-Make sure the MySQL Connector/J .jar is on the project's Build Path
+	 (Project > Properties > Java Build Path > Libraries). If you get
+	 "No suitable driver" or "ClassNotFoundException: com.mysql.cj.jdbc.Driver",
+	 the connector jar is not on the build path.
+	-Right-click OrderingSystemApp.java > Run As > Java Application.
+	-Login with the default admin: admin@system.com / admin123
+	-The order screen's Customer dropdown uses customers 1-5 from the seed above.
 
 
 What can the backend do (currently):
