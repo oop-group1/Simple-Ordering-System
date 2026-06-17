@@ -24,6 +24,8 @@ public class MainFrame extends JFrame {
         this.currentUser = user;
 
         setTitle("Simple Ordering System");
+        ImageIcon appIcon = Theme.image("cart.png");
+        if (appIcon != null) setIconImage(appIcon.getImage());   // cart in the title bar
         setSize(820, 560);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -46,11 +48,6 @@ public class MainFrame extends JFrame {
         JLabel title = new JLabel("Simple Ordering System");
         title.setForeground(Theme.WHITE);
         title.setFont(Theme.TITLE);
-        ImageIcon cart = Theme.icon("images/cart.png", 28);
-        if (cart != null) {
-            title.setIcon(cart);
-            title.setIconTextGap(10);
-        }
 
         JLabel welcome = new JLabel("Welcome, " + currentUser.getUsername()
                 + "  (" + currentUser.getRole() + ")");
