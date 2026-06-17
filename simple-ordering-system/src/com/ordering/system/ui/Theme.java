@@ -4,12 +4,10 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JTable;
 import javax.swing.border.LineBorder;
-import javax.swing.plaf.basic.BasicButtonUI;
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Font;
-import java.awt.Image;
 
 /**
  * Single source of truth for the app's look (matcha + coffee theme).
@@ -28,6 +26,7 @@ public class Theme {
     public static final Color FIELD        = new Color(0xFBF8F0); // cream text fields / cards
     public static final Color BORDER       = new Color(0xC9B79C); // tan outlines
     public static final Color TEXT         = new Color(0x4B3621); // dark coffee text
+    public static final Color MUTED        = new Color(0x8A7B6A); // faded coffee (captions)
     public static final Color WHITE        = Color.WHITE;
 
     // --- Fonts ---
@@ -49,16 +48,13 @@ public class Theme {
         styleButton(button, SECONDARY, TEXT, BORDER);
     }
 
-    // Switching to BasicButtonUI is the key step: it gives a flat button that
-    // actually paints our background color (Nimbus otherwise hides it). The
-    // rounded edge comes from LineBorder's "rounded" flag.
+    // Sets a button's colors, font and a rounded border. setBackground shows
+    // the color because the app uses Java's default look-and-feel.
     private static void styleButton(JButton button, Color bg, Color fg, Color border) {
-        button.setUI(new BasicButtonUI());
         button.setBackground(bg);
         button.setForeground(fg);
         button.setFont(BUTTON);
         button.setFocusPainted(false);
-        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         button.setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(border, 1, true),
                 BorderFactory.createEmptyBorder(7, 16, 7, 16)));
@@ -74,21 +70,29 @@ public class Theme {
                 BorderFactory.createEmptyBorder(6, 8, 6, 8)));
     }
 
+    /** Taller rows and a bold header so tables are easier to read. */
+    public static void styleTable(JTable table) {
+        table.setRowHeight(24);
+        table.setFont(NORMAL);
+        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
+    }
+
     /** Formats a number as pesos, e.g. 89.0 -> "₱89.00". */
     public static String money(double amount) {
         return "₱" + String.format("%.2f", amount);
     }
 
     /**
-     * Loads an image and scales it to the given height while keeping its
-     * width ratio, so pictures of any size are never stretched.
-     * Returns null if the file is missing, letting callers fall back.
+     * Loads an image from the images folder. It tries the path from the project
+     * folder and from the repo root, so images load no matter which folder the
+     * program is run from. Returns null if the file can't be found.
      */
-    public static ImageIcon icon(String path, int height) {
-        ImageIcon raw = new ImageIcon(path);
-        if (raw.getIconWidth() <= 0) return null;
-        int width = height * raw.getIconWidth() / raw.getIconHeight();
-        Image scaled = raw.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
-        return new ImageIcon(scaled);
+    public static ImageIcon image(String name) {
+        String[] places = { "images/" + name, "simple-ordering-system/images/" + name };
+        for (String path : places) {
+            ImageIcon icon = new ImageIcon(path);
+            if (icon.getIconWidth() > 0) return icon;
+        }
+        return null;
     }
 }

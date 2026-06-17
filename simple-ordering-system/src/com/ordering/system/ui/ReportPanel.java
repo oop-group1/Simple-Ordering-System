@@ -62,15 +62,15 @@ public class ReportPanel extends JPanel {
         headerRow.add(title, BorderLayout.WEST);
         headerRow.add(refreshBtn, BorderLayout.EAST);
 
-        // Six stat boxes in a 2x3 grid.
+        // Six stat cards in a 2x3 grid (icon + big number + caption).
         JPanel stats = new JPanel(new GridLayout(2, 3, 10, 10));
         stats.setOpaque(false);
-        stats.add(statCard(totalProductsLabel));
-        stats.add(statCard(totalStockLabel));
-        stats.add(statCard(totalValueLabel));
-        stats.add(statCard(lowStockLabel));
-        stats.add(statCard(outOfStockLabel));
-        stats.add(statCard(avgPriceLabel));
+        stats.add(statCard("products.png", totalProductsLabel, "Total products"));
+        stats.add(statCard("stock.png",    totalStockLabel,    "Total stock units"));
+        stats.add(statCard("value.png",    totalValueLabel,    "Inventory value"));
+        stats.add(statCard("low.png",      lowStockLabel,      "Low stock items"));
+        stats.add(statCard("out.png",      outOfStockLabel,    "Out of stock"));
+        stats.add(statCard("avg.png",      avgPriceLabel,      "Average price"));
 
         JPanel top = new JPanel(new BorderLayout(0, 10));
         top.setOpaque(false);
@@ -79,18 +79,34 @@ public class ReportPanel extends JPanel {
         return top;
     }
 
-    // One stat box. The lighter fill against the cream background makes it
-    // look slightly raised.
-    private JPanel statCard(JLabel label) {
-        label.setFont(Theme.NORMAL);
-        label.setForeground(Theme.TEXT);
+    // One stat card: icon on the left, big number with a small caption on the right.
+    private JPanel statCard(String iconFile, JLabel valueLabel, String caption) {
+        valueLabel.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        valueLabel.setForeground(Theme.TEXT);
+
+        JLabel cap = new JLabel(caption);
+        cap.setFont(Theme.NORMAL);
+        cap.setForeground(Theme.MUTED);
+
+        JPanel textCol = new JPanel();
+        textCol.setOpaque(false);
+        textCol.setLayout(new BoxLayout(textCol, BoxLayout.Y_AXIS));
+        valueLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        cap.setAlignmentX(Component.LEFT_ALIGNMENT);
+        textCol.add(valueLabel);
+        textCol.add(cap);
+
+        ImageIcon ic = Theme.image("icons/" + iconFile);
+        JLabel icon = (ic != null) ? new JLabel(ic) : new JLabel();
+        icon.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 12));
 
         JPanel card = new JPanel(new BorderLayout());
         card.setBackground(Theme.FIELD);
         card.setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(Theme.BORDER, 1, true),
                 BorderFactory.createEmptyBorder(10, 12, 10, 12)));
-        card.add(label, BorderLayout.CENTER);
+        card.add(icon, BorderLayout.WEST);
+        card.add(textCol, BorderLayout.CENTER);
         return card;
     }
 
@@ -98,6 +114,9 @@ public class ReportPanel extends JPanel {
         JLabel title = new JLabel("All Products");
         title.setFont(Theme.HEADING);
         title.setForeground(Theme.TEXT);
+
+        Theme.styleTable(table);
+        table.getColumnModel().getColumn(0).setPreferredWidth(40);   // narrow ID column
 
         JScrollPane scroll = new JScrollPane(table);
         scroll.setBorder(new LineBorder(Theme.BORDER, 1, true));
@@ -147,11 +166,12 @@ public class ReportPanel extends JPanel {
 
         double avgPrice = products.isEmpty() ? 0 : priceSum / products.size();
 
-        totalProductsLabel.setText("Total products: " + products.size());
-        totalStockLabel.setText("Total stock units: " + totalStock);
-        totalValueLabel.setText("Inventory value: " + Theme.money(totalValue));
-        lowStockLabel.setText("Low stock items: " + lowCount);
-        outOfStockLabel.setText("Out of stock: " + outCount);
-        avgPriceLabel.setText("Average price: " + Theme.money(avgPrice));
+        // The cards show just the number; the caption text is set in statCard().
+        totalProductsLabel.setText("" + products.size());
+        totalStockLabel.setText("" + totalStock);
+        totalValueLabel.setText(Theme.money(totalValue));
+        lowStockLabel.setText("" + lowCount);
+        outOfStockLabel.setText("" + outCount);
+        avgPriceLabel.setText(Theme.money(avgPrice));
     }
 }

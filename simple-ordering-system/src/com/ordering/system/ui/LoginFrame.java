@@ -22,6 +22,8 @@ public class LoginFrame extends JFrame {
 
     public LoginFrame() {
         setTitle("Simple Ordering System - Login");
+        ImageIcon appIcon = Theme.image("cart.png");
+        if (appIcon != null) setIconImage(appIcon.getImage());   // cart in the title bar
         setSize(420, 470);
         setLocationRelativeTo(null);          // open in the middle of the screen
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -79,9 +81,14 @@ public class LoginFrame extends JFrame {
     // Cart picture on top, with the title under it. Uses an emoji if the
     // image file can't be found.
     private JComponent buildLogo() {
-        ImageIcon cart = Theme.icon("images/cart.png", 70);
-        JLabel logo = (cart != null) ? new JLabel(cart) : new JLabel("🛒");
-        if (cart == null) logo.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 48));
+        ImageIcon cart = Theme.image("cart.png");
+        JLabel logo;
+        if (cart != null) {
+            logo = new JLabel(cart);
+        } else {                                 // fallback if the image is missing
+            logo = new JLabel("🛒");
+            logo.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 48));
+        }
 
         JLabel title = new JLabel("Ordering System");
         title.setFont(Theme.TITLE);

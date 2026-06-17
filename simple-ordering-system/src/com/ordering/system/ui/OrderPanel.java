@@ -50,6 +50,12 @@ public class OrderPanel extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         setBackground(Theme.BACKGROUND);
         Theme.field(qtyField);
+
+        Theme.styleTable(productTable);
+        Theme.styleTable(cartTable);
+        productTable.getColumnModel().getColumn(0).setPreferredWidth(40);   // ID
+        cartTable.getColumnModel().getColumn(0).setPreferredWidth(40);      // ID
+
         add(buildCenter(), BorderLayout.CENTER);
         add(buildBottom(), BorderLayout.SOUTH);
 
@@ -64,6 +70,8 @@ public class OrderPanel extends JPanel {
         JButton addBtn = new JButton("Add to Cart");
         addBtn.addActionListener(e -> addToCart());
         Theme.primary(addBtn);
+        qtyField.setToolTipText("How many of the selected product to add");
+        addBtn.setToolTipText("Add the selected product to the cart");
         JPanel addRow = new JPanel(new FlowLayout(FlowLayout.LEFT));
         addRow.setOpaque(false);
         addRow.add(new JLabel("Qty:"));
@@ -108,6 +116,10 @@ public class OrderPanel extends JPanel {
         JButton refreshBtn = new JButton("Refresh Products");
         refreshBtn.addActionListener(e -> loadProducts());
         Theme.button(refreshBtn);
+
+        placeBtn.setToolTipText("Place the order for the selected customer");
+        customerBox.setToolTipText("Choose the customer this order is for");
+        refreshBtn.setToolTipText("Reload the product list from the database");
 
         totalLabel.setFont(Theme.SECTION);
         totalLabel.setForeground(Theme.TEXT);

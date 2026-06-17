@@ -4,8 +4,6 @@ import com.ordering.system.model.Product;
 import com.ordering.system.util.ProductService;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.ArrayList;
@@ -27,10 +25,6 @@ public class InventoryPanel extends JPanel {
     private JTextField searchField = new JTextField(15);
     private JLabel countLabel = new JLabel(" ");
 
-    // The product list is loaded once and kept here so the live search can
-    // filter it in memory instead of querying the database on every keystroke.
-    private List<Product> allProducts = new ArrayList<>();
-
     public InventoryPanel(ProductService productService) {
         this.productService = productService;
 
@@ -38,6 +32,10 @@ public class InventoryPanel extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         setBackground(Theme.BACKGROUND);
         Theme.field(searchField);
+
+        Theme.styleTable(table);
+        table.getColumnModel().getColumn(0).setPreferredWidth(40);   // ID
+        table.getColumnModel().getColumn(4).setPreferredWidth(60);   // Stock
 
         countLabel.setFont(Theme.NORMAL);
         countLabel.setForeground(Theme.TEXT);
@@ -53,25 +51,30 @@ public class InventoryPanel extends JPanel {
     // --- Layout ---
 
     private JPanel buildTopBar() {
-        JButton addBtn    = new JButton("Add");
-        JButton updateBtn = new JButton("Update Stock");
-        JButton deleteBtn = new JButton("Delete");
+        JButton searchBtn  = new JButton("Search");
+        JButton showAllBtn = new JButton("Show All");
+        JButton addBtn     = new JButton("Add");
+        JButton updateBtn  = new JButton("Update Stock");
+        JButton deleteBtn  = new JButton("Delete");
 
+        searchBtn.addActionListener(e -> search());
+        showAllBtn.addActionListener(e -> showAll());
         addBtn.addActionListener(e -> addProduct());
         updateBtn.addActionListener(e -> updateStock());
         deleteBtn.addActionListener(e -> deleteProduct());
 
-        Theme.primary(addBtn);
+        Theme.primary(addBtn);     // main action = green
+        Theme.button(searchBtn);   // the rest = tan
+        Theme.button(showAllBtn);
         Theme.button(updateBtn);
         Theme.button(deleteBtn);
 
-        // A DocumentListener fires on every text change, giving live search
-        // without a separate Search button.
-        searchField.getDocument().addDocumentListener(new DocumentListener() {
-            public void insertUpdate(DocumentEvent e)  { search(); }
-            public void removeUpdate(DocumentEvent e)  { search(); }
-            public void changedUpdate(DocumentEvent e) { search(); }
-        });
+        // Hover hints
+        searchField.setToolTipText("Type a product name or ID, then click Search");
+        addBtn.setToolTipText("Add a new product");
+        updateBtn.setToolTipText("Change the stock of the selected product");
+        deleteBtn.setToolTipText("Delete the selected product");
+        showAllBtn.setToolTipText("Show all products");
 
         JLabel searchLabel = new JLabel("Search:");
         searchLabel.setFont(Theme.HEADING);
@@ -81,6 +84,8 @@ public class InventoryPanel extends JPanel {
         bar.setOpaque(false);
         bar.add(searchLabel);
         bar.add(searchField);
+        bar.add(searchBtn);
+        bar.add(showAllBtn);
         bar.add(addBtn);
         bar.add(updateBtn);
         bar.add(deleteBtn);
@@ -89,23 +94,21 @@ public class InventoryPanel extends JPanel {
 
     // --- Loading the table ---
 
-    // Refreshes the in-memory list from the database, then shows everything.
     private void showAll() {
-        allProducts = productService.getAllProducts();
-        fillTable(allProducts);
+        searchField.setText("");
+        fillTable(productService.getAllProducts());
     }
 
-    // Filters the cached list by ID or name. Safe to run on every keystroke
-    // because it never touches the database.
+    // Shows only the products whose ID or name matches the search box.
     private void search() {
         String keyword = searchField.getText().trim().toLowerCase();
         if (keyword.isEmpty()) {
-            fillTable(allProducts);
+            showAll();
             return;
         }
 
         List<Product> found = new ArrayList<>();
-        for (Product p : allProducts) {
+        for (Product p : productService.getAllProducts()) {
             boolean matchesId   = String.valueOf(p.getItemId()).contains(keyword);
             boolean matchesName = p.getItemName().toLowerCase().contains(keyword);
             if (matchesId || matchesName) {
