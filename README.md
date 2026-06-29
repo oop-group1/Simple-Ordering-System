@@ -101,9 +101,3 @@ Ordering (Transaction):
 Input Validation: Prevents the system from crashing if you enter a letter where a number is expected (via try-catch).  
 OOP Compliance: Demonstrates Abstraction, Inheritance, Polymorphism, and Encapsulation.  
 
-What the Backend cannot do (currently, the we may or may not add):  
-    Payment Processing  
-    User Management GUI: Currently, to add Customers and Staff is done manually via MySQL Workbench.  
-    Order History/Reporting: Can place orders, but cannot currently "View all orders for Customer X" or "Generate a monthly sales report." or whatever.  
-    Order Status Updates  
-    Customer Portal 
