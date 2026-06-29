@@ -4,6 +4,8 @@ import com.ordering.system.model.*;
 import com.ordering.system.util.*;
 import java.util.*;
 
+// the old console version, kept only as a backup for testing.
+
 public class OrderingSystemGUI {
     private static UserService userService = new UserService();
     private static ProductService productService = new ProductService();
